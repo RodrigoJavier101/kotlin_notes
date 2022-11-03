@@ -1,0 +1,239 @@
+pagina 11:
+Integración de un API de datos externa
+
+
+
+parte II
+Enviar datos desde una actividad hacia un fragmento
+Recibir datos de una actividad en un fragmento
+Enviar datos desde un fragmento hacia una actividad
+Recibir datos de un fragmento en una actividad
+Enviar datos entre fragmentos
+
+
+
+public static PreguntaFragment newInstance(String pregunta,
+String categoria,
+String respuestaCorrecta,
+ArrayList<String> respuestasIncorrectas) {
+PreguntaFragment fragment = new PreguntaFragment();
+Bundle arguments = new Bundle();
+arguments.putString("PREGUNTA", pregunta);
+arguments.putString("CATEGORIA", categoria);
+arguments.putString("RESPUESTA_CORRECTA", respuestaCorrecta);
+arguments.putStringArrayList("RESPUESTAS_INCORRECTAS", respuestasIncorrectas);
+fragment.setArguments(arguments);
+return fragment;
+}
+
+
+
+
+public interface OnFragmentPreguntaListener {
+void onRadioButtonSelection(int selection, String respuesta);
+}
+
+
+public class MainActivity extends AppCompatActivity implements OnFragmentPreguntaListener {
+
+
+@Override
+public void onRadioButtonSelection(int selection, String respuesta) {
+
+
+
+//LISTENER DE INTERFAZ QUE COMUNICA NUESTRO FRAGMENTO CON LA ACTIVIDAD
+CONTENEDORA
+private OnFragmentPreguntaListener mListener;
+
+
+//en el fragmento
+@Override
+public void onAttach(Context context) {
+ super.onAttach(context);
+ if (context instanceof OnFragmentPreguntaListener) {
+  mListener = (OnFragmentPreguntaListener) context;
+ } else {
+  throw new ClassCastException(context.toString()
+  + "Aún no implementas la interfaz en la actividad");
+ }
+}
+
+// en el fragmento
+@Override
+public void onCheckedChanged(RadioGroup group, int checkedId) {
+  if (respuestaUno.isChecked()) {
+    setRadioButtonValues(1, respuestaUno.getText().toString());
+  } else if (respuestaDos.isChecked()) {
+    setRadioButtonValues(2, respuestaDos.getText().toString());
+  } else if (respuestaTres.isChecked()) {
+    setRadioButtonValues(3, respuestaTres.getText().toString());
+  } else if (respuestaCuatro.isChecked()) {
+    setRadioButtonValues(4, respuestaCuatro.getText().toString());
+  }
+}
+
+
+
+//en el fragmento
+private void setRadioButtonValues(int radioButtonValue, String respuesta) {
+ //ENVIAMOS NUESTRO VALOR SELECCIONADO AL LISTENER DE LA INTERFAZ
+ mListener.onRadioButtonSelection(radioButtonValue, respuesta);
+ this.radioButtonValue = radioButtonValue;
+}
+
+//en el fragmento
+@Override
+public void onDetach() {
+ mListener = null;
+ super.onDetach();
+}
+
+
+
+
+
+
+-----------------------------------------
+
+private List<Fragment> getFragmentosDinamicos(PreguntasLista preguntas){
+List<Fragment> fragmentosLista = new ArrayList<>();
+int contadorPregunta = 1;
+for(Pregunta pregunta: preguntas.getResults()) {
+fragmentosLista.add(
+PreguntaFragment
+.newInstance(
+contadorPregunta,
+pregunta.getQuestion(),
+pregunta.getCategory(),
+pregunta.getCorrect_answer(),
+pregunta.getIncorrect_answers()
+)
+);
+contadorPregunta++;
+}
+return fragmentosLista;
+}
+
+
+-----------------------------------------------------
+intents.
+
+static final int REQUEST_IMAGE_CAPTURE = 1;
+private void dispatchTakePictureIntent() {
+  Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+  if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+   startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+  }
+}
+
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+    Bundle extras = data.getExtras();
+    Bitmap imageBitmap = (Bitmap) extras.get("data");
+    imageView.setImageBitmap(imageBitmap);
+  }
+}
+
+
+btnVerRespuesta.setOnClickListener(new View.OnClickListener() {
+  @Override
+  public void onClick(View v) {
+    Uri uri = Uri.parse("https://opentdb.com/api.php?amount=10&category=15&difficulty=easy");
+    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    startActivity(intent);
+  }
+});
+
+
+
+--------------------
+
+datos en intents:
+
+public static PreguntaFragment newInstance(int numeroPregunta,
+String pregunta,
+String categoria,
+String respuestaCorrecta,
+ArrayList<String> respuestasIncorrectas,
+int totalPreguntas) {
+PreguntaFragment fragment = new PreguntaFragment();
+Bundle arguments = new Bundle();
+arguments.putInt("ID_FRAGMENTO", numeroPregunta);
+arguments.putString("NUMERO_PREGUNTA", "PREGUNTA "+numeroPregunta);
+arguments.putString("PREGUNTA", pregunta);
+arguments.putString("CATEGORIA", categoria);
+arguments.putString("RESPUESTA_CORRECTA", respuestaCorrecta);
+arguments.putStringArrayList("RESPUESTAS_INCORRECTAS", respuestasIncorrectas);
+arguments.putInt("TOTAL_PREGUNTAS", totalPreguntas);
+fragment.setArguments(arguments);
+return fragment;
+}
+
+----
+
+private List<Fragment> getFragmentosDinamicos(PreguntasLista preguntas){
+List<Fragment> fragmentosLista = new ArrayList<>();
+int contadorPregunta = 1;
+for(Pregunta pregunta: preguntas.getResults()) {
+fragmentosLista.add(
+PreguntaFragment
+.newInstance(
+contadorPregunta,
+pregunta.getQuestion(),
+pregunta.getCategory(),
+pregunta.getCorrect_answer(),
+pregunta.getIncorrect_answers(),
+preguntas.getResults().size()
+)
+);
+contadorPregunta++;
+}
+return fragmentosLista;
+}
+
+----
+
+public void shareWithWhatsApp(View v){
+Intent sendIntent = new Intent();
+sendIntent.setAction(Intent.ACTION_SEND);
+sendIntent.putExtra(Intent.EXTRA_TEXT, "¡Hola! te comparto mi niota obtenida hoy: " +
+notaFija.getText().toString());
+sendIntent.setType("text/plain");
+//sendIntent.setPackage("com.whatsapp");
+startActivity(sendIntent);
+}
+
+----
+
+setResult(Activity.RESULT_OK,sendIntent);
+startActivityForResult(sendIntent, 2);
+
+----
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+super.onActivityResult(requestCode, resultCode, data);
+Log.d(TAG,"RequestCode: "+requestCode);
+if(requestCode == 2){
+Intent returnIntent = new Intent();
+returnIntent.putExtra("result","El usuario ha terminado con éxito, la nota resultante fue:
+"+notaFija.getText().toString());
+setResult(Activity.RESULT_OK,returnIntent);
+finish();
+}
+}
+
+----
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+super.onActivityResult(requestCode, resultCode, data);
+if(resultCode==RESULT_OK){
+Toast.makeText(getApplicationContext(), "Hemos vuelto a las preguntas,
+"+data.getStringExtra("result"), Toast.LENGTH_LONG).show();
+Log.d(TAG, "MainActivity "+data.getStringExtra("result"));
+}}	
+

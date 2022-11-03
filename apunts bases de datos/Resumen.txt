@@ -1,0 +1,248 @@
+consultas
+importar desde un csv
+crear indices
+
+nuevas tablas cn datos desde -csv
+generalmente se se paran po comas
+
+ACCIONES
+Abre el archivo en un editor de texto, de recomendación Sublime Text o Atom
+Si las filas están encerradas entre comillas, elimínelas
+Crear la tabla a la cual desea agregar el archivo csv.
+Cargar el archivo a través de SQL Developer.
+
+
+ dos tablas, pokemones y mis_pokemones:
+-pokedesk			-pokedesk
+-nombre				-fechad de captura
+-tipo_1				-lugar
+-tipo_2				-huevo
+				-peso
+				-estatura
+
+
+Contexto:
+En la tabla pokemones estan los pokemones correspondientes a la generación de
+Kanto, los cuales son 151 pokemones.
+El primer campo corresponde al número de la pokedex, luego su nombre, tipo1 y tipo2
+para identificar el tipo de pokemon que son. Algunos solo tienen un tipo y otros pueden
+tener un segundo tipo.
+En la tabla mis_pokeemones, son los pokemones que hemos atrapado, donde se indica
+el número de la pokedex al que corresponde ese pokemon, la fecha de captura, el lugar
+donde se capturó, si fue de huevo (si huevo es false es porque se capturó con una
+pokebola, si es true es porque salió de huevo), el peso y la estatura.
+
+
+
+
+SELECT tipo1, count(*)
+FROM pokemones GROUP BY tipo1;
+
+SELECT tipo1, count(*)
+FROM pokemones GROUP BY tipo1;
+
+SELECT columna1, columna2, ...
+FROM nombre_tabla
+[WHERE condiciones]
+ORDER BY columna2 [DESC | ASC];
+
+SELECT *
+FROM pokemones
+ORDER BY nombre DESC;
+
+Cuando creamos un índice en una tabla de la base de datos, lo que hacemos es agilizar el tiempo
+de respuesta de esta búsqueda.
+CREATE INDEX nombre_indice on nombre_tabla(nombre_columna);
+
+CREATE INDEX index_pokemon_nombre on pokemones(nombre);
+COMMIT;
+
+SELECT * FROM all_indexes WHERE table_name = nombre_tabla;
+saber que columnas de nuestras tablas tienen índice
+
+SELECT * FROM all_indexes WHERE table_name = 'POKEMONES';
+
+existe un índice de caracter único sobre la clave primaria
+
+drop index nombre_indice;
+commit;
+
+-- Seleccionamos las columnas desde la tabla1
+SELECT columnas FROM tabla1
+-- Posterior a la selección de la columna, indicamos que vamos a generar la unión
+-- con la columna de la tabla2
+JOIN tabla2 ON tabla1.columna=tabla2.columna
+[WHERE condicion];
+
+sólo se mostrarán las filas que cumplan la condición
+
+INNER JOIN : Une sólo las columnas comunes entre ambas tablas
+LEFT JOIN : Une todas las columnas de la primera tabla con las columnas en común de la
+segunda
+tabla
+FULL OUTER JOIN : Une todas las columnas de ambas las tablas
+
+SELECT * FROM pokemones INNER JOIN mis_pokemones on
+pokemones.pokedex=mis_pokemones.pokedex ORDER BY nombre;
+
+SELECT * FROM pokemones LEFT JOIN mis_pokemones on
+pokemones.pokedex=mis_pokemones.pokedex ORDER BY nombre;
+
+SELECT * FROM pokemones FULL OUTER JOIN mis_pokemones on
+pokemones.pokedex=mis_pokemones.pokedex ORDER BY nombre;
+
+SELECT * FROM pokemones FULL OUTER JOIN mis_pokemones on
+pokemones.pokedex=mis_pokemones.pokedex WHERE pokemones.tipo2 is null or
+mis_pokemones.pokedex is null ORDER BY nombre1,
+
+registros que no se relacionen entre ambas tablas.
+
+SUBQUERY
+debe enmarcarse dentro de la cláusula WHERE .	
+es para retornar datos que serán utilizados posteriormente en una consulta principal.
+De esta manera funcionan como una condición para restringir los datos.
+hacer una consulta a una tabla es necesaria la consulta de otra
+tabla
+
+SELECT pokedex, nombre
+FROM pokemones
+WHERE pokedex IN
+(SELECT pokedex
+FROM mis_pokemones
+WHERE huevo= 'true'
+);
+
+
+
+FROM
+En este caso, la subquery obtiene como resultado una subtabla temporal, sobre la cual se hará una
+nueva consulta,
+SELECT x.columa1, xcoluma2, ...
+FROM (
+SELECT columa1, columna2, ...
+FROM nombre_tabla2
+WHERE condicion
+) as x
+INNER JOIN nombre_tabla1 as y on x.columna1 = y.columna1;
+
+
+
+REglas de subqyerys
+
+Las consultas internas deben estar encapsuladas entre paréntesis.
+Una subquery puede tener sólo una columna especificada en SELECT , con la excepción de
+múltiples columnas definidas en la consulta principal.
+El comando ORDER BY no se puede utilizar en una consulta interna. La excepción es que
+esta instrucción si puede ser incluída en la consulta principal.
+Para obtener un resultado similar a ORDER BY dentro de una consulta interna, se puede
+implementar el comando GROUP BY .
+Aquellas consultas internas que retornen más de una fila sólo pueden ser utilizadas con
+operadores de múltiples valores como IN .
+
+Transacciones.
+Cargar una base de datos usando dump
+
+¿Qué pasa si al momento de crear una consulta ya
+sea para recuperar información, crear nuevos registros, entre otros, se crea algún problema y
+nuestra operación no puede realizarse? Es por esto que existen las transacciones en Oracle SQL
+
+son secuencias de instrucciones ordenadas, las cuáles pueden ser indicadas de
+forma manual o pueden ser aplicadas automáticamente. Estas realizan cambios en las bases de
+datos a la hora de aplicar comandos de manipulación de columnas y registros
+
+Atomicidad: Todas las operaciones realizadas en la transacción deben ser completadas. En el
+caso que ocurra un fallo, esta la transacción es abortada y devuelve todo al estado previo a la
+transacción.
+Consistencia: La base de datos cambiará solamente cuando la transacción se haya realizado.
+Aislamiento: Las transacciones pueden ocurrir independientes unas de otras.
+Durabilidad: El resultado de la transacción persiste a pesar de que el sistema falle.
+
+
+Es posible tener control de las transacciones. Para eso, existen los siguientes comandos:
+BEGIN : El sistema permite que se ejecuten todas las sentencias SQL que necesitemos.
+COMMIT : Guarda los cambios de la transacción.
+ROLLBACK : Retrocede los cambios realizados.
+SAVEPOINT : Guarda el punto de partida al cual volver a la hora de aplicar ROLLBACK
+SET TRANSACTION : Le asigna nombre a la transacción.
+
+
+Estos comandos sólo pueden ser usados con las operaciones INSERT, UPDATE y DELETE, ya que
+aquellos que manipulan toda la tabla hacen este proceso automáticamente. La sintaxis de estos
+comandos es la siguiente:
+COMMIT;
+SAVEPOINT nombre_savepoint;
+ROLLBACK [TO nombre_savepoint];
+
+
+Lo que esta entre corchetes es de carácter opcional, por lo que podemos decirle a ROLLBACK a
+que punto volver, o este volverá al último punto por defecto.
+SET TRANSACTION [READ ONLY|WRITE][NAME nombre_transaccion];
+
+En este caso, podemos usar READ ONLY para solamente leer la base de datos, READ WRITE
+para leer y escribir sobre ella, y poder nombrar la transacción con el comando NAME.
+
+SET TRANSACTION READ WRITE NAME primera_transaccion;
+INSERT INTO nombre_tabla (columna1, columna2, columna3) VALUES (valor1,
+valor2, valor3);
+SAVEPOINT registro_ingresado;
+
+En este caso creamos una transacción en la que se puede leer y escribir sobre la base de datos
+que tiene de nombre 'primera_transaccion', luego insertamos un valor y hicimos SAVEPOINT para
+poder volver a este punto en cualquier caso.
+
+UPDATE nombre_tabla SET columna1=valor_nuevo WHERE condicion;
+ROLLBACK TO registro_ingresado;
+COMMIT;
+
+Ahora, realizamos un UPDATE, sin embargo, nos devolvimos al punto guardado en SAVEPOINT,
+para así finamente guardarlo haciendo COMMIT.
+
+Respaldar una base de datos utilizando SQL Developer
+SQL Developer contiene herramientras que nos permiten de manera simple generar copias de
+nuestra base de datos, para así respaldarla o bien cargar datos de este respaldo en un momento
+determinado.
+Respaldo de una tabla
+Para crear un archivo a partir de una base de datos, podemos utilizar las herramientras de SQL
+Developer nos propociona.
+Hacemos clic derecho en la tabla que queremos respaldar y seleccionamos exportar
+
+
+En general dejaremos la configuración por defecto, teniendo presente la ruta en que se creará el
+archivo export.sql
+Una vez terminado el proceso, se genera un script que permite replicar la estructura y datos que
+contiene la tabla seleccionada.
+Restaurar una base de datos
+Para restaurar una base de datos, sólo necesitamos ejecutar el script generado.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DESAFIO TOP 100
+
+Para resover este desafío debes descargar desde plataforma el archivo .zip , llamado Apoyo Desafío
+- Top 100 , en donde encontrarás los recursos necesarios para este ejercicio.
+1. Crear base de datos llamada películas
+2. Revisar los archivos peliculas.csv y reparto.csv para crear las tablas correspondientes,
+determinando la relación entre ambas tablas.
+3. Cargar ambos archivos a su tabla correspondiente
+4. Listar todos los actores que aparecen en la película "Titanic", indicando el título de la película,
+año de estreno, director y todo el reparto.
+5. Listar los titulos de las películas donde actúe Harrison Ford.
+6. Listar los 10 directores más populares, indicando su nombre y cuántas películas aparecen en el
+top 100.
+7. Indicar cuantos actores distintos hay.
+
+8. Indicar las películas estrenadas entre los años 1990 y 1999 (ambos incluidos) ordenadas por
+título de manera ascendente.
+9. Listar el reparto de las películas lanzadas el año 2001 .
+10. Listar los actores de la película más nueva .

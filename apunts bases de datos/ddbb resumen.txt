@@ -1,0 +1,256 @@
+ objeto-relacional (ORDBMS, 
+---Multiplataforma: Puede ejecutarse en varios sistemas operativos, incluidos Windows Server,
+Unix y varias distribuciones de GNU / Linux.
+---Es el motor de base de datos objeto-relacional más usado a nivel mundial.
+---Permite el uso de particiones para hacer consultas, informes, análisis de datos, etc. Esto
+favorece su eficiencia.
+
+Crear usuario CREATE USER nombre_usuario
+IDENTIFIED BY contrasena;
+Asignar rol GRANT CONNECT TO nombre_usuario;
+Asignar privilegios GRANT CREATE SESSION, GRANT ANY
+PRIVILEGE TO nombre_usuario;
+Asignar espacio en disco GRANT UNLIMITED TABLESPACE TO
+nombre_usuario;
+
+Tipos de Privilegio
+
+SELECT Permite hacer SELECT sobre la tabla
+INSERT Permite hacer INSERT sobre la tabla
+UPDATE Permite hacer UPDATE sobre la tabla
+DELETE Permite hacer DELETE sobre la tabla
+REFERENCES Otorga privilegios para establecer CONSTRAINT en la tabla
+ALTER Otorga privilegios para hacer ALTER TABLE
+INDEX Otorga privilegios para crear index sobre la tabla
+ALL Otorga todos los privilegios anteriores
+
+
+Tipos de datos
+INT Números enteros de 4 bytes
+SMALLINT Números enteros de 2 bytes
+BIGINT Números enteros de 8 bytes
+FLOAT Números decimales de 32 bit
+DOUBLE Números decimales de 64 bit, con 15 dígitos decimales
+CHAR Cadena de hasta 255 caracteres de tamaño fijo
+VARCHAR(N) Cadena de hasta 65-535 caracteres de longitud variable
+DATE Almacena fecha
+TIME Almacena tiempo horario desde 00:00:00 a 24:00:00
+TIMESTAMP almacena fecha y hora juntos
+
+
+
+
+
+
+
+
+Algunos comandos son:
+ALIAS AND AS
+CREATE CREATEDB CREATEUSER
+DATABASE FROM INNER
+JOIN LARGE PASSWORD
+WHERE
+
+
+SET oracle_sid = orcl
+SQLPLUS / AS SYSDBA
+
+
+sqlplus / as sysdba
+crea user:
+CREATE USER nombre_usuario IDENTIFIED BY contrasena;
+CREATE USER usuario_prueba IDENTIFIED BY prueba123;
+
+Roles
+GRANT CONNECT TO usuario_prueba;
+ GRANT es una declaración con muchas
+opciones posibles, pero su funcionalidad principal es administrar los privilegios de los usuarios y
+roles en toda la base de datos.
+
+privilegios
+GRANT CREATE SESSION, GRANT ANY PRIVILEGE TO usuario_prueba;
+
+Privilegio Descripción
+SELECT Permite hacer SELECT sobre la tabla
+INSERT Permite hacer INSERT sobre la tabla
+UPDATE Permite hacer UPDATE sobre la tabla
+DELETE Permite hacer DELETE sobre la tabla
+REFERENCES Otorga privilegios para establecer CONSTRAINT en la tabla
+ALTER Otorga privilegios para hacer ALTER TABLE
+INDEX Otorga privilegios para crear index sobre la tabla
+ALL Otorga todos los privilegios anteriores
+
+
+Espacio de disco
+GRANT UNLIMITED TABLESPACE TO usuario_prueba;
+
+Aprovechando que estamos conectados como 'SYSDBA' , activaremos el usuario 'HR' que
+contiene información de tablas y datos de prueba para hacer los ejercicios:
+ALTER USER HR IDENTIFIED BY password ACCOUNT UNLOCK;
+
+Cambio de usuario:
+exit
+sqlplus usuario_prueba/prueba123
+SELECT user FROM dual;
+
+Herramientas:
+conexion a db
+ejecutar consultar y scripts
+
+
+configurar sqlDeveloper
++ crea conexion o icono 
+
+conectar
+
+
+hacer conculta en el espacion de trabajo.
+
+elem de una base de datos
+tabla
+saber lo que se va a almacenar.
+si no se sabe lo mejor es la dv no relacional.
+
+tipos de datos:
+--INT : Números enteros de 4 bytes que pueden tomar valor desde -2.147.483.648 hasta
++2.147.483.647.
+--NUMBER(p,s) : Números decimales de 22 bytes que pueden tener una precisiòn (p) entre 1 y
+38 y una escala (s) entre -84 y 127.
+--CHAR(s) : Cadena de hasta 2000 bytes de longitud fija.
+--VARCHAR(s) : Cadena de hasta 4000 bytes de longitud variable. A diferencia de CHAR, si no
+se ocupa toda la memoria, esta queda libre. CHAR ocupará toda la memoria solicitada.
+--DATE : Almacena fecha según formato definido en los parámetros de la base de datos.
+Permite un rango entre el 01-01-4172 AC hasta 31-12-9999 DC.
+--TIMESTAMP : Almacena fecha y hora juntos: yyyy-mm-dd hh:mm:ss
+
+
+CRUD
+CREATE TABLE nombre_tabla(
+columna1 tipo_de_dato1,
+columna2 tipo_de_dato2,
+columna3 tipo_de_dato3
+);
+
+--coments
+
+-- Creamos una tabla con el nombre agenda
+CREATE TABLE Agenda(
+-- Denfinimos el campo nick con el tipo de dato cadena con un largo de 25 caracteres
+nick VARCHAR(25),
+-- Definimos el campo numero_telefonico con el tipo de dato cadena con un largo de 8 caracteres.
+numero_telefonico VARCHAR(8),
+-- Vinculamos una clave foránea entre nuestra columna numero_telefonico y su simil en la tabla
+directorio_telefonico
+FOREIGN KEY (numero_telefonico) REFERENCES Directorio_telefonico(numero_telefonico)
+);
+
+
+INSERT INTO nombre_tabla (columna1, columna2, columna3) VALUES (valor1,
+valor2, valor3);
+
+
+INSERT INTO Directorio_telefonico
+(nombre, apellido, numero_telefonico, direccion, edad) VALUES
+('Fabian', 'Salas', '32846352', 'Playa Ancha', 21);
+
+
+UPDATE nombre_tabla SET columna1=valor_nuevo WHERE condicion;
+
+
+UPDATE Directorio_telefonico SET direccion='Villa Los Leones' WHERE nombre='Juan';
+
+DELETE FROM tabla;
+
+DELETE FROM tabla WHERE condicion;
+
+INSERT INTO agenda
+VALUES('Juanito','12345678');
+
+
+ALTER TABLE nombre_tabla
+ADD nueva_columna tipo_de_dato;ALTER TABLE nombre_tabla
+DROP nueva_columna tipo_de_dato;
+
+restricciones
+NOT NULL: La columna no puede tener valores NULL.
+UNIQUE: Todos los valores de la columna deben ser diferentes unos a otros.
+PRIMARY KEY: Aplica la clave primaria.
+FOREIGN KEY: Aplica la clave foránea.
+CHECK: Todos los valores de una columna deben satisfacer una condición en específico.
+DEFAULT: Le da un valor por defecto a aquellos registros que no tengan un valor asignado.
+INDEX: Sirve para crear y recuperar data de forma rápida.
+
+CREATE TABLE Directorio_telefonico(
+nombre VARCHAR(25) NOT NULL,
+apellido VARCHAR(25),
+numero_telefonico VARCHAR(8) UNIQUE,
+direccion VARCHAR(255),
+edad INT );
+
+
+CREATE TABLE tabla1(
+columna1 tipo_de_dato1,
+columna2 tipo_de_dato2,
+columna3 tipo_de_dato3,
+PRIMARY KEY (columna1)
+);
+
+CREATE TABLE tabla2(
+columna4 tipo_de_dato4,
+columna5 tipo_de_dato5,
+FOREIGN KEY (columna4) REFERENCES tabla1(columna1)
+);
+
+
+
+Una biblioteca familiar 
+Parte 1
+1. Crear tabla editoriales, con los atributos 
+código, 
+nombre. 
+
+Definir código como llave primaria
+
+2. Crear tabla libros, con los atributos 
+código, 
+título, 
+codigoeditorial. 
+
+Definir código como llave
+primaria y codigoeditorial como llave foránea referenciando a la tabla editoriales
+
+
+3. Insertar editoriales y libros de acuerdo a lo siguiente:
+Título Autor Editorial
+Don Quijote de La Mancha I Miguel de Cervantes Anaya
+El principito Antoine SaintExupery Andina
+El príncipe Maquiavelo S.M.
+Diplomacia Henry Kissinger S.M.
+Don Quijote de La Mancha II Miguel de Cervantes Anaya
+
+
+4. Modificar la tabla libros, agregando la columna autor
+5. Agregar autor a los libros ya ingresados
+6. Insertar 2 nuevos libros
+7. Eliminar los libros de la editorial Anaya
+8. Actualizar el nombre de la editorial Andina a Iberlibro
+
+
+
+Parte 2
+Los dueños de la biblioteca desean registrar los préstamos que hacen de estos libros, por lo que
+solicitan lo siguiente:
+9. Crear una nueva tabla usuarios, con los atributos codigo, nombre, apellido y teléfono. Definir
+código como llave primaria
+
+10. Crear una nueva tabla préstamos, con los atributos código, código_libro, código_usuario,
+fecha_préstamo. Definir código como llave primaria, código_libro como llave foránea de la tabla
+libros y código_usuario como llave foránea de la tabla usuarios
+11. Agregar registros de acuerdo a lo siguiente.
+
+Usuario Teléfono Libro fecha_préstamo
+José Soto 98347756 El principito 01-10-2019
+Miguel Gómez 94845537 Diplomacia 02-10-2019
+Sara Avendaño 93345455 El principito 02-10-2019
+Jaime Carrasco 92223453 Don Quijote de la Mancha I 10-10-2019
+Jaime Carrasco 92223453 Don Quijote de la Mancha II 01-11-2019

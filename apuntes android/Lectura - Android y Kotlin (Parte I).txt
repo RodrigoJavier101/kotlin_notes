@@ -1,0 +1,22 @@
+convetir java a kotlin:
+code -> cnvert to kotln
+
+
+WHEN
+
+when (valor){
+0 -> println("numero invalido")
+1, 2 -> println("numero muy bajo")
+3 -> println("numero correcto")
+4 -> println("numero alto, pero aceptable")
+else -> println("numero muy alto")
+}
+
+
+var result = when(number) {
+0 -> "numero invalido"
+1, 2 -> "numero muy bajo"
+3 -> "numero correcto"
+4 -> "numero alto, pero aceptable"
+else -> "numero muy alto"
+}

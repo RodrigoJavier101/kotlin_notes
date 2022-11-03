@@ -1,0 +1,213 @@
+integración entre cliente y servidor.
+
+request o solicitud
+response	
+
+pagina 9 de os 6 ppio rest
+
+
+pagina 12 response codes:
+200-299 significa que la solicitud fue exitosa.
+300-399 significa que la solicitud estuvo bien, pero debe hacer otra cosa.
+400-499 es un error dónde no se encuentra algún objeto o recurso, o no se ha
+invocado correctamente.
+500-599 es un error realmente malo de servidor.
+
+
+operaciones REST
+● GET: Es utilizado únicamente para consultar información al servidor, muy parecidos
+a realizar un SELECT a la base de datos. No soporta el envío del payload.
+
+● POST: insert ---> creación de un nuevo registro, Soporta el envío del payload.
+
+● PUT: update --> Se utiliza para actualizar por completo un registro existente,  Soporta el envío del payload.
+
+● PATCH: Este método es similar al método PUT, pues permite actualizar un registro
+existente, sin embargo, este se utiliza cuando actualizar solo un fragmento del
+registro y no en su totalidad, es equivalente a realizar un UPDATE a la base de datos.
+Soporta el envío del payload.
+
+● DELETE:eliminar un registro existente, .No soporta el envío del payload.
+
+● HEAD: método para obtener información sobre un determinado
+recurso sin retornar el registro. Este método se utiliza a menudo para probar la
+validez de los enlaces de hipertexto, la accesibilidad y las modificaciones recientes.
+Nota: El payload (carga útil) es el mensaje enviado compuesto además por una cabecera con
+información útil para la transferencia.
+
+
+
+fun connectApi() {
+try {
+val url = URL("https://jsonplaceholder.typicode.com/posts")
+val conn = url.openConnection() as HttpURLConnection
+} catch (e: MalformedURLException) {
+e.printStackTrace()
+} catch (e: IOException) {
+e.printStackTrace()
+}
+}
+
+
+----
+
+fun connectApi() {
+try {
+val url = URL("https://jsonplaceholder.typicode.com/posts")
+val conn = url.openConnection() as HttpURLConnection
+conn.requestMethod = "GET"
+
+if (conn.responseCode != 200) {
+throw RuntimeException("Failed : HTTP error code : " + conn.responseCode)
+}
+val br = BufferedReader(InputStreamReader(conn.inputStream))
+println("Output from Server ....")
+while (br.readLine() != null) {
+println(br.readLine())
+}
+conn.disconnect()
+} catch (e: MalformedURLException) {
+e.printStackTrace()
+} catch (e: IOException) {
+e.printStackTrace()
+}
+}
+
+----
+
+fun main() {
+val test = TEST()
+test.connectApi()
+}
+
+
+----
+
+data class Post(@SerializedName("user_id") val userId: Int, val id: Int,
+val title: String, val body: String)
+
+
+----
+
+interface Api {
+-->Declaración de API
+@GET("/posts/lists")
+fun getAllPosts(): Call<ArrayList<Post>>
+
+-->Método request (solicitud) :GET, POST, PUT, DELETE, y HEAD.
+@DELETE("/posts/{postId}")
+fun deletePost(@Path("postId") postId: Int?): Call<Void>
+}
+
+--> @Path(...) con el nombre del parámetro que se
+utiliza en la definición del verbo para sustituirlo. Por ejemplo, @DELETE 
+reemplaza {postId} por el valor de la variable postId al momento 
+de construir la petición al servidor.
+
+m2:58 PM 1/13/2021mmmmmmmmmmmmmm@GET("posts/list")
+@GET("posts@GET("posts/list")list?sort=desc")
+
+Manipulación de url:
+@GET("group/{id}/posts")
+fun groupList(@Path("id") groupId: Int): Call<List<Post>>	
+
+Para combinaciones complejas de parámetros de consulta se puede utilizar un
+“Map”.
+@GET("group/{id}/posts")
+fun groupList(
+@Path("id") groupId: Int,
+@QueryMap options: Map<String, String>
+): Call<List<Post>>
+
+
+Request Body:
+Se puede especificar un objeto para usarlo como un cuerpo de
+solicitud HTTP con la anotación @Body.
+@POST("posts/new")
+fun createPost(@Body post: Post?): Call<Post>
+
+Form Encode, multipart:
+Los métodos también se pueden declarar para enviar datos
+codificados por formularios y multiparte. Los datos codificados en forma se envían
+cuando @FormUrlEncoded está presente en el método. Cada par clave-valor se
+anota con @Fieldel nombre y el objeto que proporciona el valor.
+@FormUrlEncoded
+@POST("post/edit")
+fun updatePost(
+@Field("first_name") first: String,
+@Field("last_name") last: String
+): Call<Post>
+
+
+Manipulación de cabecera (header): Podemos establecer encabezados estáticos
+para un método utilizando la anotación @Headers.
+En este caso le indicamos que no se puede almacenar este resultado por más de
+64000 segundos, unas 17,78 horas
+@Headers("Cache-Control: max-age=640000")
+@GET("widget/list")
+fun widgetList(): Call<List<Widget>>
+
+
+
+interface Api {
+@GET("/posts")
+fun getAllPosts(): Call<ArrayList<Post>>
+}
+
+
+----------
+pagina 40 Volley HTTP Client	
+
+implementation 'com.android.volley: volley: 1.1.1'
+git clone https://github.com/google/volley
+
+
+// función para hacer una llamada de red
+fun getUsers() {
+// Se instancia una nuevo cola de peticiones
+val queue = Volley.newRequestQueue(this)
+val url: String = "https://api.github.com/search/users?q=eyehunt"
+// Request a string response from the provided URL.
+val stringReq = StringRequest(Request.Method.GET, url,
+Response.Listener<String> { response ->
+var strResp = response.toString()
+val jsonObj: JSONObject = JSONObject(strResp)
+val jsonArray: JSONArray = jsonObj.getJSONArray("items")
+var str_user: String = ""
+for (i in 0 until jsonArray.length()) {
+var jsonInner: JSONObject = jsonArray.getJSONObject(i)
+str_user = str_user + "\n" + jsonInner.get("login")
+}
+textView!!.text = "response : $str_user "
+},
+Response.ErrorListener { textView!!.text = "That didn't work!" })
+queue.add(stringReq)
+}
+
+---------------------
+
+JSON - REST HEADER (Cabecera/Encabezado)
+
+
+
+
+
+---------------------
+RETROFIT - JSON HEADERS
+En Retrofit para asignar parámetros a nuestros métodos HTTP de las interfaces, basta con
+agregar la anotación @Headers sobre la anotación del tipo de método HTTP, ya sea get,
+post, put, delete.
+Ejemplo:
+@Headers("Content-Type: application/json; charset=UTF-8")
+
+
+---------------------
+JSON - REST BODY (Cuerpo)
+
+
+---------------------
+RETROFIT - JSON BODY
+
+@Headers("Content-Type: application/json; charset=UTF-8")
+@POST("/posts")
+fun createNewPost(@Body post: Post): Call<Post>

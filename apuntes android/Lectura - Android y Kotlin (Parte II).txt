@@ -1,0 +1,109 @@
+
+--->Utilizar onClickListener:
+button.setOnClickListener(object : View.OnClickListener {
+  override fun onClick(v: View) {
+  textview.text = "Texto cambiado"
+ }
+})
+
+button.setOnClickListener { textview.text = "Texto cambiado" }
+
+OnLongClickListener, OnFocusChangeListener, OnTouchListener, etc.
+
+
+--->Utilizar Funciones lambda:
+pasar funcionalidad como parámetro sin la necesidad de crear funciones 
+anónimas, esto nos permite hacer funciones complejas, pero con menos código, lo que hace más simple su lectura.
+
+func () {
+ println('Esta función no tiene un nombre')
+}
+
+{ x: Int, y: Int -> x + y }
+
+
+button.setOnClickListener(object : View.OnClickListener {
+override fun onClick(v: View) {
+textview.text = "Texto cambiado"
+}
+})
+
+
+button.setOnClickListener { view -> textview.text = "Texto cambiado" }
+
+button.setOnClickListener { textview.text = "Texto cambiado" }  
+
+
+
+Usar Filters, Listas y Maps.
+mapOf("key1" to 1, "key2" to 2, "key3" to 3, "key11" to 11)
+
+
+El filtrado por predicado es es sencillamente una función que nos devuelve otra lista, ya filtrada
+val largoMayorA3 = numeros.filter { it.length > 3 }
+val filteredIdx = numeros.filterIndexed { index, s -> (index != 0) && (s.length < 5) }
+val filtro = numeros.filter { (key, value) -> key.endsWith("1") && value > 10}
+
+val numeros = listOf(null, 1, "two", 3.0, "four")
+var result = ""
+numeros.filterIsInstance<String>().forEach {
+ result += it.toUpperCase()
+}
+
+val filtro = numeros.filterNotNull()
+
+val numbers = listOf("one", "two", "three", "four")
+val (entranEnElRango, resto) = numbers.partition { it.length > 3 }
+
+Prueba de predicados: retorna true
+button.setOnClickListener { textview.text = numbers.any { it.endsWith("e") }.toString() }
+button.setOnClickListener { textview.text = numbers.none { it.endsWith("a") }.toString() }
+button.setOnClickListener { textview.text = numbers.all { it.endsWith("e") }.toString() }
+button.setOnClickListener { textview.text = numbersMap.any { (key, value) -> key.endsWith("1") && value > 10 }.toString() }
+
+
+Sorting:
+lista.sort()
+
+SortBy:
+val lista = mutableListOf(1 to "z", 2 to "y", 7 to "x", 6 to "t", 5 to "m", 6 to "a")
+lista.sortBy { it.second }
+
+Reverse:
+lista.reverse()
+
+
+---------------------------------
+Patrón Delegate
+
+interface Mamifero {
+ fun nombre(): String
+}
+
+class Gato : Mamifero {
+ override fun nombre() = "Gato"
+}
+
+class Lince : Mamifero {
+ override fun nombre() = "Lince"
+}
+
+
+
+class Felinos(private val delegate: Mamifero) : Mamifero by delegate {
+  override fun nombre() = "Soy mamifero y felino, mi nombre es: ${delegate.nombre()}"
+}
+
+
+override fun onCreate(savedInstanceState: Bundle?) {
+ super.onCreate(savedInstanceState)
+ setContentView(R.layout.activity_main)
+ 
+ val mamifero1 = Felinos(Gato())
+ textview.text = mamifero1.nombre()
+ 
+ val mamifero2 = Felinos(Lince())
+ textview2.text = mamifero2.nombre()
+}
+
+

@@ -1,0 +1,133 @@
+Picasso.get()
+.load("https://cdn.pixabay.com/photo/envelope-297570_960_720.png")
+.into(imageView)
+
+● Un drawable
+Picasso.get()
+.load(R.drawable.landing_screen)
+.into(imageView)
+
+● Una imagen almacenada localmente en el dispositivo
+Picasso.get()
+.load("file:///android_asset/DvpvklR.png")
+.into(imageView)
+
+
+Picasso.get()
+.load(url)
+.into(imageView)
+
+
+
+Picasso.get()
+.load(url)
+.resize(50, 50)
+.centerCrop()
+.into(imageView)
+
+
+
+
+
+class CropSquareTransformation : Transformation {
+override fun transform(source: Bitmap): Bitmap {
+val size = Math.min(source.width, source.height)
+val x = (source.width - size) / 2
+val y = (source.height - size) / 2
+val result = Bitmap.createBitmap(source, x, y, size, size)
+if (result != source) {
+source.recycle()
+}
+return result
+}
+override fun key(): String {
+return "square()"
+}
+}
+
+
+
+Picasso.get()
+.load(url)
+.placeholder(R.drawable.user_placeholder)
+.error(R.drawable.user_placeholder_error)
+.into(imageView)
+
+
+
+picasso.setIndicatorsEnabled(true)
+
+picasso.loggingEnabled(true)
+
+implementation 'com.squareup.picasso:picasso:2.71828'
+
+
+override fun onBindViewHolder(holder: PostHolder, position: Int) {
+ val post = myDataset[position]
+ holder.textId.text = post.id.toString()
+ holder.title.text = post.title
+ Picasso.get()
+ .load("https://cdn.pixabay.com/photo/2014/03/25/16/54/envelope-297570_960_720.png")
+ .resize(60, 40)
+ .centerCrop()
+ .into(holder.image)
+}
+
+
+
+val picasso = Picasso.Builder(applicationContext)
+ .indicatorsEnabled(true)
+ .loggingEnabled(true)
+ .build()
+Picasso.setSingletonInstance(picasso)
+
+
+
+--------
+
+
+implementation 'com.github.bumptech.glide:glide:4.11.0'
+annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+
+
+override fun onBindViewHolder(holder: PostHolder, position: Int) {
+val post = myDataset[position]
+holder.textId.text = post.id.toString()
+holder.title.text = post.title
+Glide.with(holder.itemView.context)
+.load("https://cdn.pixabay.com/photo/2014/03/25/16/54/envelope-297570_960_720.png")
+.into(holder.image)
+}
+
+
+
+
+
+Al placeholder se le entrega un Drawable o alguna de sus subclases. Por ejemplo, para el
+placeholder se puede entregar un Drawable
+Glide.with(context)
+ .load(url)
+ .placeholder(R.drawable.placeholder)
+ .into(view);
+o se le puede entregar un ColorDrawable, que es una subclase de Drawable
+Glide.with(context)
+ .load(url)
+ .placeholder(ColorDrawable(Color.BLACK))
+ .into(view);
+Siguiendo la misma lógica, se le puede entregar un Drawable (o una subclase) para mostrar
+en caso de error al cargar la imagen
+Glide.with(fragment)
+ .load(url)
+ .error(R.drawable.error)
+ .into(view);
+
+
+
+
+
+def glide_version = '4.11.0'
+implementation "com.github.bumptech.glide:glide:$glide_version"
+annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
+
+

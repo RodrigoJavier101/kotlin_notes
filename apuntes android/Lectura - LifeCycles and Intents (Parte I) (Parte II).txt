@@ -1,0 +1,11 @@
+pagina 11:
+Integración de un API de datos externa
+
+
+
+parte II
+Enviar datos desde una actividad hacia un fragmento
+Recibir datos de una actividad en un fragmento
+Enviar datos desde un fragmento hacia una actividad
+Recibir datos de un fragmento en una actividad
+Enviar datos entre fragmentos
